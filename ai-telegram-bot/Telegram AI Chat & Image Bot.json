@@ -1,0 +1,1461 @@
+{
+  "name": "Telegram AI Chat & Image Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        32
+      ],
+      "id": "c968a2cc-05eb-434c-83b9-6e93d5114249",
+      "name": "Telegram Message Trigger",
+      "webhookId": "261ed75b-92b9-4113-820a-6d93413dd93d",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63718b44-4c0e-4e7b-9776-648eceb5a1e7",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "770255a2-9157-4fb8-a753-e8aad272b290",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Message Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        32
+      ],
+      "id": "c865b9a7-8d05-4460-9210-41425ddfb46a",
+      "name": "Extract Message Text"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "11582e16-0f1a-46bd-ad86-3da184237cc8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "60cf4884-ab56-46e3-a455-02a5180b23f8",
+                    "leftValue": "={{ $json.text }}",
+                    "rightValue": "/help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "help"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        16
+      ],
+      "id": "ba7d5195-f0ce-4642-8d20-13656ff1b76a",
+      "name": "Route Request"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "=Привіт {{ $('Telegram Message Trigger').item.json.message.chat.first_name }}! 👋\nЯ AI бот, який може:  \n🧠 відповідати на запитання \n🎨 генерувати зображення  \n\nКоманди для генерації картинок: \ninsta — вертикальне зображення (Instagram формат) \nfb — горизонтальне зображення (банер)  \n\nПриклади:  insta намалюй каву в мінімалізмі fb банер про CRM систему  \n\nПросто напиши запит ✨ ",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        -160
+      ],
+      "id": "939d1446-14e9-40a3-b045-b72326e084b5",
+      "name": "Send Start Message",
+      "webhookId": "1570adaa-e0c9-409e-a52a-1dca85c458fc",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "ℹ️ Як користуватися ботом \n\n1️⃣ Напиши будь-яке питання — я відповім.  \n\n2️⃣ Для генерації картинки використовуй ключові слова:  \ninsta — вертикальна картинка \nfb — горизонтальна картинка  \n\nПриклади:  \ninsta намалюй ліс у тумані \nfb банер про маркетинг \n\nЯкщо команда не вказана — буде квадратне зображення.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        32
+      ],
+      "id": "4474f900-07d8-4421-be03-b5428ef6cf54",
+      "name": "Send Help Message",
+      "webhookId": "3b1ef909-9a9d-4bfe-93da-8770ad2765ab",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aa64b8c5-1e38-4912-a6ed-b67e17c327d9",
+              "name": "size",
+              "value": "={{$node[\"Extract Message Text\"].json.text.toLowerCase().includes(\"insta\")\n? \"1024x1792\"\n: $node[\"Extract Message Text\"].json.text.toLowerCase().includes(\"fb\")\n? \"1792x1024\"\n: \"1024x1024\"}}",
+              "type": "string"
+            },
+            {
+              "id": "63f7a228-b65b-4cd6-b7a9-8a44bef465ff",
+              "name": "prompt",
+              "value": "={{ \n$node[\"Extract Message Text\"].json.text\n.replace(/\\binsta\\b/gi,\"\")\n.replace(/\\bfb\\b/gi,\"\")\n.trim()\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1088,
+        -16
+      ],
+      "id": "7414f252-4ce7-440a-ad04-07749c7d2b7c",
+      "name": "Set Image Parameters"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are an expert prompt engineer for AI image generation.\n\nRewrite the user's request into a detailed professional prompt for image generation.\n\nTranslate the prompt into English if it is in another language.\n\nAdd visual details such as style, lighting, atmosphere, composition and camera description.\n\nReturn ONLY the final prompt in English."
+            },
+            {
+              "content": "={{ $('Set Image Parameters').item.json.prompt }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1888,
+        80
+      ],
+      "id": "4ff6dc9f-7b8d-4c47-9e23-39f262845ff2",
+      "name": "Enhance Image Prompt",
+      "credentials": {
+        "openAiApi": {
+          "id": "qWZsXAY9qhzyblU5",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $json.output[0].content[0].text }}",
+        "options": {
+          "dalleQuality": "standard",
+          "size": "={{ $('Set Image Parameters').item.json.size }}",
+          "style": "natural",
+          "returnImageUrls": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2304,
+        80
+      ],
+      "id": "5db54cfe-3277-409c-b5c0-e202a4dd9700",
+      "name": "Generate Image",
+      "credentials": {
+        "openAiApi": {
+          "id": "qWZsXAY9qhzyblU5",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a classifier in a Telegram bot.\n\nYour task is to determine whether the user wants to generate an image.\n\nRespond with ONLY one word:\n\ntrue\nor\nfalse\n\nReturn true if the user:\n- asks to draw, generate, create or show an image\n- describes something that could be visualized as an image\n- uses keywords like \"insta\" or \"fb\"\n- writes something that looks like an image prompt\n\nReturn false if the user:\n- asks a normal question\n- wants a text explanation\n- is having a conversation\n\nExamples:\n\n\"draw a cat\" → true\n\"generate image of mountains\" → true\n\"insta minimal coffee cup\" → true\n\"fb banner about CRM system\" → true\n\"insta fb\" → true\n\"minimalist coffee cup on white background\" → true\n\n\"what is CRM\" → false\n\"how are you\" → false\n\"explain marketing strategy\" → false\n\nReturn ONLY true or false.\nDo not add any explanation."
+            },
+            {
+              "content": "={{ $json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        224
+      ],
+      "id": "f88fcab3-1415-4a37-b4ca-976de62e29ae",
+      "name": "Detect Image Intent",
+      "credentials": {
+        "openAiApi": {
+          "id": "qWZsXAY9qhzyblU5",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1088,
+        488
+      ],
+      "id": "78dc4df6-3b2f-46f8-aa70-a6034038f0b0",
+      "name": "Typing Indicator",
+      "webhookId": "8cf5321a-f1f3-4e4e-8380-b7412aff89b1",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1312,
+        416
+      ],
+      "id": "7231f2a6-a051-4bd0-a3b8-80b220133c63",
+      "name": "Merge After Typing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ec9db878-9def-42c0-90a6-d9fca87065ef",
+              "name": "text",
+              "value": "={{ $('Extract Message Text').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "97807a81-57e6-48f6-bb60-2a05e40e6eef",
+              "name": "user_name",
+              "value": "={{ $('Telegram Message Trigger').item.json.message.chat.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "71d6cf20-f3f0-45c1-89a4-97bcac4906ea",
+              "name": "language_code",
+              "value": "={{ $('Telegram Message Trigger').item.json.message.from.language_code }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        416
+      ],
+      "id": "3a1f261a-841a-47eb-be21-128ceddbe56f",
+      "name": "Prepare Chat Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "27751be1-3d62-430d-bf4d-932821a2d000",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2592,
+        560
+      ],
+      "id": "dffafa3e-d9a6-4693-9694-2057f6b4399c",
+      "name": "Check AI Error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9c553901-872c-4b79-906b-68a34f7c3c0f",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2592,
+        80
+      ],
+      "id": "982dffa1-3643-41df-be1c-f4e7b3bd9202",
+      "name": "Check AI Img Error"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "baf57044-6a1b-4149-8918-76d97b713ba6",
+              "leftValue": "={{ $json.prompt }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1312,
+        -16
+      ],
+      "id": "7c45c9a2-565b-403d-8466-dac4171392fd",
+      "name": "Check Empty Image Prompt"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "⚠️ Схоже, ви не вказали що саме намалювати. \n\nНаприклад: \ninsta мінімалістична чашка кави \nfb банер про CRM",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        -112
+      ],
+      "id": "d9bffb3b-ce0c-40be-9ad8-0ef62d089844",
+      "name": "Notify Missing Image Description",
+      "webhookId": "41159a66-4baa-4596-92bd-161e19e636b6",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "🎨 Генерую зображення...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        80
+      ],
+      "id": "9f77ea81-9570-4ec3-8f57-5a898d7e8341",
+      "name": "Notify Image Generation",
+      "webhookId": "2b7bc77d-acaf-43fe-b723-157ce024a8aa",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "da20fe6a-8fd9-4cb0-b9c9-5f3defb78038",
+              "leftValue": "={{ $json.output[0].content[0].text.trim() }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        640,
+        224
+      ],
+      "id": "f066d626-331d-4971-ad96-57b9e2a4cc77",
+      "name": "Check Image Request"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "={{ $json.output[0].content[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2816,
+        608
+      ],
+      "id": "3620ca0b-c6a9-4774-8c4d-56a9c2b6df51",
+      "name": "Send Chat Reply",
+      "webhookId": "d87dc50c-f9c3-472f-b537-f1101bcaedff",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "⚠️ Вибачте, сталася технічна помилка. \n\nСпробуйте ще раз через кілька секунд.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2816,
+        224
+      ],
+      "id": "d2d2e79c-1b8c-406f-a700-6ba82b1df4d8",
+      "name": "Notify User About Error",
+      "webhookId": "3c6837c3-eaef-48b3-9cb6-aba951ca6135",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3264,
+        32
+      ],
+      "id": "8934c1f8-08b6-4fab-86e8-8bffaf4847f7",
+      "name": "Wait For Admin Response",
+      "webhookId": "547f6193-0b0c-4979-a4bd-08cd6142cbb7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5ac61c14-4325-48af-a5ba-a9d0c1f6885b",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3488,
+        32
+      ],
+      "id": "ee4d82c4-ca92-47ba-9b0d-30d78f50787e",
+      "name": "Check Approval Decision"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "@ai_media_channel",
+        "file": "={{ $('Generate Image').item.json.url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3712,
+        -16
+      ],
+      "id": "247837ad-ecec-482f-a502-0a8ad744c2f7",
+      "name": "Publish Image To Channel",
+      "webhookId": "e655897d-b5f7-45f9-9cce-80115578e4e9",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "❌ Контент не був підтверджений адміністратором.\n\nСпробуйте ще раз або змініть опис.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3712,
+        224
+      ],
+      "id": "d92608c0-02f3-414a-afe8-a83258297a59",
+      "name": "Notify User About Rejection",
+      "webhookId": "71cab4a6-df73-4541-b6f1-be9f3c60a2ad",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a classifier.\n\nYour task is to determine if the user is asking to create a post that should be published in a Telegram channel.\n\nRespond with ONLY one word:\n\ntrue\nor\nfalse\n\nReturn true if the user wants to create a post, announcement, or content for publishing in a Telegram channel.\n\nExamples:\n\n\"create a post about marketing\" → true\n\"write a telegram post about AI\" → true\n\"generate a post for a channel about CRM\" → true\n\nReturn false for normal conversation.\n\nExamples:\n\n\"What is CRM?\" → false\n\"tell me about marketing\" → false\n\"hello\" → false"
+            },
+            {
+              "content": "={{ $json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1536,
+        416
+      ],
+      "id": "7456b1f7-760e-42ff-8064-78377f6a9ebd",
+      "name": "Detect Post Intent",
+      "credentials": {
+        "openAiApi": {
+          "id": "qWZsXAY9qhzyblU5",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a06353cd-73b1-4e56-86f6-833cfdc22171",
+              "leftValue": "={{ $json.output[0].content[0].text }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1952,
+        416
+      ],
+      "id": "f55f6320-daf6-42f8-90a2-a6ee6f081ed9",
+      "name": "Check Post Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are a helpful AI assistant in a Telegram bot.\n\nThe user's name is {{ $('Merge After Typing').item.json.user_name }}\nThe user's language code is {{ $('Merge After Typing').item.json.language_code }}.\n\nAlways reply in the same language that the user used in their message.\n\nKeep the response short and clear (2–4 sentences).\n\nBe polite, helpful and easy to understand.\n\nIf the request is unclear, ask a short clarifying question.\n\nAvoid long explanations.\n\nDo not use markdown, headings or code blocks unless necessary."
+            },
+            {
+              "content": "={{ $('Merge After Typing').item.json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 150,
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2240,
+        560
+      ],
+      "id": "b0c6fd00-8116-4db3-a66e-0b852dece7d9",
+      "name": "Generate Chat Reply",
+      "credentials": {
+        "openAiApi": {
+          "id": "qWZsXAY9qhzyblU5",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are an AI assistant that writes posts for a Telegram channel.\n\nCreate a short and engaging Telegram post based on the user's request.\n\nRequirements:\n- Write in the same language as the user.\n- Keep the post concise and clear.\n- Use 2–4 short paragraphs or sentences.\n- Make the post interesting and suitable for a Telegram audience.\n- Do not use markdown or code formatting."
+            },
+            {
+              "content": "={{ $('Merge After Typing').item.json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2240,
+        320
+      ],
+      "id": "f487378e-fe1a-44f8-8a61-1101c88c9763",
+      "name": "Generate Post Content",
+      "credentials": {
+        "openAiApi": {
+          "id": "qWZsXAY9qhzyblU5",
+          "name": "OpenAi account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "27751be1-3d62-430d-bf4d-932821a2d000",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2592,
+        320
+      ],
+      "id": "1ed9a357-5cb0-4c53-9519-9e2133afc18c",
+      "name": "Check Post AI Error"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3264,
+        416
+      ],
+      "id": "229f2d5b-874e-49ab-b819-3b48ee906279",
+      "name": "Wait For Admin Decision",
+      "webhookId": "03e840fd-cc42-480c-a71a-4f8351704437"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1a33a01-8bbb-4417-bf0e-971ed8d744b4",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3488,
+        416
+      ],
+      "id": "2f64f9b7-e7ff-47a2-9377-0343d2fdbc3b",
+      "name": "Check Post Approval"
+    },
+    {
+      "parameters": {
+        "chatId": "@ai_media_channel",
+        "text": "={{ $('Generate Post Content').item.json.output[0].content[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3712,
+        464
+      ],
+      "id": "927e9cf2-f4a8-451c-86e0-457ccd4fe328",
+      "name": "Publish Post To Channel",
+      "webhookId": "f7d767dc-7351-4b32-8196-03c04ae25220",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "message": "Зображення готове.\n\nОпублікувати в канал?",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3040,
+        32
+      ],
+      "id": "d817c13c-148a-4a5d-8611-7ca6574460bd",
+      "name": "Send Image For Approval",
+      "webhookId": "96baa0cb-e788-44f1-a10b-3cf380bf1e5e",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "message": "Новий пост готовий.\n\nОпублікувати в канал?",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3040,
+        416
+      ],
+      "id": "8289e2f8-6000-4e43-81af-d3c4774d8f24",
+      "name": "Send Post For Approval",
+      "webhookId": "c9c66796-14c6-4d76-8718-b9b92bbb722d",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "file": "={{ $json.url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2816,
+        32
+      ],
+      "id": "8589cc2a-2ffd-43a5-b5af-89a29bb85101",
+      "name": "Show Generated Image",
+      "webhookId": "37833f96-436f-4eb0-8641-3ff09fed3fa6",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extract Message Text').item.json.chat_id }}",
+        "text": "={{ $json.output[0].content[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2816,
+        416
+      ],
+      "id": "26e29ac9-fedc-4378-947c-5c66e439757a",
+      "name": "Show Generated Post",
+      "webhookId": "d725bf83-b119-4e04-9903-9f53221a074d",
+      "credentials": {
+        "telegramApi": {
+          "id": "uAPSaAmXYQlfhZB8",
+          "name": "PixelMind_bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Message Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Message Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Message Text": {
+      "main": [
+        [
+          {
+            "node": "Route Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Request": {
+      "main": [
+        [
+          {
+            "node": "Send Start Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Help Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Detect Image Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Image Parameters": {
+      "main": [
+        [
+          {
+            "node": "Check Empty Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhance Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image": {
+      "main": [
+        [
+          {
+            "node": "Check AI Img Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Image Intent": {
+      "main": [
+        [
+          {
+            "node": "Check Image Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Typing Indicator": {
+      "main": [
+        [
+          {
+            "node": "Merge After Typing",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge After Typing": {
+      "main": [
+        [
+          {
+            "node": "Detect Post Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Chat Data": {
+      "main": [
+        [
+          {
+            "node": "Merge After Typing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Typing Indicator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check AI Error": {
+      "main": [
+        [
+          {
+            "node": "Notify User About Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Chat Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check AI Img Error": {
+      "main": [
+        [
+          {
+            "node": "Notify User About Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Generated Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Empty Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Notify Missing Image Description",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Image Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Image Generation": {
+      "main": [
+        [
+          {
+            "node": "Enhance Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Image Request": {
+      "main": [
+        [
+          {
+            "node": "Set Image Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Chat Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait For Admin Response": {
+      "main": [
+        [
+          {
+            "node": "Check Approval Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Approval Decision": {
+      "main": [
+        [
+          {
+            "node": "Publish Image To Channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify User About Rejection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Post Intent": {
+      "main": [
+        [
+          {
+            "node": "Check Post Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Post Request": {
+      "main": [
+        [
+          {
+            "node": "Generate Post Content",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Chat Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Chat Reply": {
+      "main": [
+        [
+          {
+            "node": "Check AI Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Post Content": {
+      "main": [
+        [
+          {
+            "node": "Check Post AI Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Post AI Error": {
+      "main": [
+        [
+          {
+            "node": "Notify User About Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Generated Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait For Admin Decision": {
+      "main": [
+        [
+          {
+            "node": "Check Post Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Post Approval": {
+      "main": [
+        [
+          {
+            "node": "Publish Post To Channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify User About Rejection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Image For Approval": {
+      "main": [
+        [
+          {
+            "node": "Wait For Admin Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Post For Approval": {
+      "main": [
+        [
+          {
+            "node": "Wait For Admin Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show Generated Image": {
+      "main": [
+        [
+          {
+            "node": "Send Image For Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show Generated Post": {
+      "main": [
+        [
+          {
+            "node": "Send Post For Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "PvSEDlYnzyAKjOmb",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "6ef56693-ab27-46b2-9721-dc4f4a693447",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c7a48120d3bb0f667fd02a8cee71c0dc5e25d8c8a43ccfa8177454ee4d928537"
+  },
+  "id": "7ZuR63fRAjKYEcYb",
+  "tags": []
+}
