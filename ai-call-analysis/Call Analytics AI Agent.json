@@ -1,0 +1,195 @@
+{
+  "name": "Call Analytics AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "={{\n`You are an AI assistant for call analytics.\n\nCurrent date: ${new Date().toISOString().split('T')[0]}\n\nLANGUAGE RULE:\nRespond only in Ukrainian.\n\nROLE:\nProvide call statistics using the tool \"get_call_stats\".\n\nTOOL RULE:\nWhen the user asks about call analytics, you MUST call the tool first.\nUse ONLY the data returned by the tool.\nNever invent data.\n\nThe tool returns:\n\n- totalCalls\n- positiveCalls\n- negativeCalls\n- neutralCalls\n- negativeCallPercent\n- averageDuration\n- categories\n\nDATE RULE:\nConvert time phrases into startDate and endDate in format YYYY-MM-DD.\n\nEMPTY DATA RULE:\nIf totalCalls = 0, respond exactly:\n\"За обраний період даних про дзвінки немає.\"\n\n\nYou MUST detect what exactly the user asked.\n\nRespond ONLY with the requested metric:\n\nIf user asks about:\n\n• average duration  \nRespond:\n\"Середня тривалість дзвінка: X секунд\"\n\n• total calls  \nRespond:\n\"Всього дзвінків: X\"\n\n• positive calls  \nRespond:\n\"Позитивних дзвінків: X\"\n\n• negative calls  \nRespond:\n\"Негативних дзвінків: X\"\n\n• neutral calls  \nRespond:\n\"Нейтральних дзвінків: X\"\n\n• category statistics  \nRespond with category breakdown only\n\n\n\nONLY if the user asks for:\n\n- \"повну статистику\"\n- \"повний звіт\"\n- \"всю статистику\"\n- \"аналіз дзвінків\"\n\nTHEN respond with full report:\n\nЗа період з START_DATE по END_DATE:\n\nВсього дзвінків: X  \nПозитивних: X  \nНегативних: X  \nНейтральних: X  \nВідсоток негативних: X%  \n\nСередня тривалість дзвінка: X секунд\n\nСтатистика по категоріях:\n...\n\n\n\nRespond ONLY with the requested information.\nDo NOT include extra statistics unless explicitly requested.\n`\n}}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9ecfd1be-b956-41a3-9eac-4ab6ab85794b",
+      "name": "Call Analytics Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "b245d676-33df-43b0-a085-53e490bdb3f6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "yInBnua22GmxIFkM",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Get call statistics between startDate and endDate. Returns totalCalls, negativeCalls, and negativeCallPercent.",
+        "workflowId": {
+          "__rl": true,
+          "value": "kOvDZmR9JwcI6aV1",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kOvDZmR9JwcI6aV1",
+          "cachedResultName": "Get Call Stats Tool"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "startDate": "={{ $fromAI(\"startDate\") }}",
+            "endDate": "={{ $fromAI(\"endDate\") }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "startDate",
+              "displayName": "startDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "endDate",
+              "displayName": "endDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        208
+      ],
+      "id": "267d2591-8976-4074-a874-d7ea147a04c7",
+      "name": "get_call_stats"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f88adbcf-8c00-4000-a733-28ddc2c3d7b0",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        -16
+      ],
+      "id": "af3b7fbd-59de-47f8-b331-60e1d7e653fb",
+      "name": "Receive Call Analytics Request",
+      "webhookId": "f88adbcf-8c00-4000-a733-28ddc2c3d7b0"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ \n{\n  reply: \n    $json.output ??\n    \"Сталася помилка при отриманні статистики дзвінків. Спробуйте пізніше.\"\n}\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        0
+      ],
+      "id": "ec2326ae-c1bb-4993-8f04-d42401ada66c",
+      "name": "Return Call Analytics Response"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Call Analytics Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_call_stats": {
+      "ai_tool": [
+        [
+          {
+            "node": "Call Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Analytics Agent": {
+      "main": [
+        [
+          {
+            "node": "Return Call Analytics Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Call Analytics Request": {
+      "main": [
+        [
+          {
+            "node": "Call Analytics Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Kt64CKhSmSoS9K0h",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "2d1269f1-db27-46bf-9f04-417a22ab0a8e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e56563062a1493aa697c9863d2ba9013f1097196e02accbf8191982bf48157fd"
+  },
+  "id": "1IB9PA0DLQySIDan",
+  "tags": []
+}

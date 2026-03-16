@@ -1,0 +1,122 @@
+{
+  "name": "Get Call Stats Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "startDate"
+            },
+            {
+              "name": "endDate"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "599e6bf6-a602-4c29-891c-3441af6c6c67",
+      "name": "Start"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "apxwnXXBbbdjQfG4",
+          "mode": "list",
+          "cachedResultName": "processed_calls",
+          "cachedResultUrl": "/projects/aiyc7UsVCrD8Q2xy/datatables/apxwnXXBbbdjQfG4"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "createdAt",
+              "condition": "gte",
+              "keyValue": "={{ $json.startDate + 'T00:00:00.000' }}"
+            },
+            {
+              "keyName": "createdAt",
+              "condition": "lte",
+              "keyValue": "={{ $json.endDate + 'T23:59:59.999' }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "696d92f3-8288-4f0b-9bfa-fb4c20ed1cf1",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const calls = $input.all() || [];\n\nconst totalCalls = calls.length;\n\nlet positiveCalls = 0;\nlet negativeCalls = 0;\nlet neutralCalls = 0;\n\nlet totalDurationMinutes = 0;\n\nconst categoryStats = {};\n\nfor (const call of calls) {\n\n  const tone = (call.json?.tone || \"\").toLowerCase();\n\n  const category =\n    call.json?.category || \"unknown\";\n\n  // duration вже у хвилинах\n  const durationMinutes =\n    Number(call.json?.call_duration || 0);\n\n  totalDurationMinutes += durationMinutes;\n\n  if (tone === \"positive\") positiveCalls++;\n  else if (tone === \"negative\") negativeCalls++;\n  else if (tone === \"neutral\") neutralCalls++;\n\n  if (!categoryStats[category]) {\n\n    categoryStats[category] = {\n      count: 0,\n      totalDurationMinutes: 0\n    };\n\n  }\n\n  categoryStats[category].count++;\n\n  categoryStats[category].totalDurationMinutes += durationMinutes;\n\n}\n\nconst averageDurationMinutes =\n  totalCalls === 0\n    ? 0\n    : Number(\n        (totalDurationMinutes / totalCalls)\n          .toFixed(2)\n      );\n\nconst categorySummary =\n  Object.entries(categoryStats).map(\n    ([category, data]) => ({\n\n      category,\n\n      count: data.count,\n\n      averageDurationMinutes:\n        Number(\n          (\n            data.totalDurationMinutes /\n            data.count\n          ).toFixed(2)\n        )\n\n    })\n  );\n\nconst negativeCallPercent =\n  totalCalls === 0\n    ? 0\n    : Math.round(\n        (negativeCalls / totalCalls) * 100\n      );\n\nreturn [\n  {\n    json: {\n\n      totalCalls,\n\n      positiveCalls,\n\n      negativeCalls,\n\n      neutralCalls,\n\n      negativeCallPercent,\n\n      averageDurationMinutes,\n\n      categories: categorySummary\n\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "09f58558-f077-42f4-8239-85870b31d66f",
+      "name": "Calculate Call Stats"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "startDate": "2026-02-22",
+          "endDate": "2026-02-23"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Calculate Call Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3a28bc12-ebe8-4fcd-a542-1d8d9ade21a9",
+  "meta": {
+    "instanceId": "e56563062a1493aa697c9863d2ba9013f1097196e02accbf8191982bf48157fd"
+  },
+  "id": "kOvDZmR9JwcI6aV1",
+  "tags": []
+}

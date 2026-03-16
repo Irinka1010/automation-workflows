@@ -1,0 +1,1003 @@
+{
+  "name": "Call Processing Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        96
+      ],
+      "id": "4581926b-531b-4ad3-b3ce-ad2c2b52e823",
+      "name": "Check for New Calls"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "queue",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "="
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        96
+      ],
+      "id": "c8d480c2-e602-4764-a1d5-6e631f12e0ff",
+      "name": "Get Unprocessed Calls",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6FZpRuYVNO7DjS6x",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "queue",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $json.row_number }}",
+            "status": "Processing"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processed-at",
+              "displayName": "processed-at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "price_assembly ai,USD",
+              "displayName": "price_assembly ai,USD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "price_open ai,USD",
+              "displayName": "price_open ai,USD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "total_price_usd",
+              "displayName": "total_price_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "сall_duration",
+              "displayName": "сall_duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "сall_word_count",
+              "displayName": "сall_word_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tone ",
+              "displayName": "tone ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        96
+      ],
+      "id": "fca6a946-23f4-4f88-ad4b-8aa650fc9e7a",
+      "name": "Mark as In Progress",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6FZpRuYVNO7DjS6x",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2d560d45-f56b-499f-887a-e436b224fb0b",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        96
+      ],
+      "id": "f1e6e723-7cc1-49fb-879a-0f0a9e9c5204",
+      "name": "ID"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.assemblyai.com/v2/transcript/{{$('ID').item.json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1344,
+        96
+      ],
+      "id": "57b5a889-ff5b-4e88-9588-1f0cdecdf529",
+      "name": "GET Transcript",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "TBnUDvrgU98saBHR",
+          "name": "AssembyAi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const url = $('Get Unprocessed Calls').first().json.url;\n\nfunction extractDriveFileId(url) {\n  const match = url.match(/\\/file\\/d\\/([a-zA-Z0-9_-]+)/);\n  return match ? match[1] : 'INVALID';\n}\n\nreturn {\n  \"url\":\"https://drive.google.com/uc?export=download&id=\" + extractDriveFileId(url)\n  \n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        96
+      ],
+      "id": "912b736f-9086-4c1b-981f-32444c6ddab9",
+      "name": "Extact ID & ganerate downloadable URL"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e70cd5a8-2ff6-4111-95ba-cd531e3d807e",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "queued",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "51285880-0197-45c2-b7ad-02c4d7c62a71",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "processing",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        16
+      ],
+      "id": "2b5661d1-40a5-47ec-9936-c7e0e1f94bc7",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        192
+      ],
+      "id": "f48c8e56-69a2-4781-a77f-4a761f96c788",
+      "name": "Wait for Transcript Processing",
+      "webhookId": "05aaf3ab-943d-4de4-81f4-b8ef30afd94f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.assemblyai.com/v2/transcript",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "audio_url",
+              "value": "={{ $json.url }}"
+            },
+            {
+              "name": "speech_models",
+              "value": "={{ [\"universal-2\"]}}"
+            },
+            {
+              "name": "language_detection",
+              "value": "={{ true }}"
+            },
+            {
+              "name": "sentiment_analysis",
+              "value": "={{ true }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        96
+      ],
+      "id": "c02c2b89-01d2-451c-b4c5-66987aa592d3",
+      "name": "AssemblyAI",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "TBnUDvrgU98saBHR",
+          "name": "AssembyAi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "acba7c54-7e99-48da-ba79-02af7193bcf8",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "error",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        -32
+      ],
+      "id": "932f849a-3aa0-477c-9ed9-ab5f012ce9be",
+      "name": "Error Check"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 614135771,
+          "mode": "list",
+          "cachedResultName": "error",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit#gid=614135771"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "url": "={{ $('Get Unprocessed Calls').item.json.url }}",
+            "Status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2080,
+        -128
+      ],
+      "id": "87bf97a9-8d40-4980-b494-ea4eacbe2bb5",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6FZpRuYVNO7DjS6x",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Analyze the following call transcript.\n\nDetermine:\n\n1. sentiment (positive, negative, neutral)\n2. category (choose ONE):\n- cake_quality\n- delivery_quality\n- other\n\nReturn ONLY valid JSON.\nDo NOT wrap in markdown.\nDo NOT use ```json\n\nFormat:\n\n{\n  \"sentiment\": \"positive\",\n  \"category\": \"cake_quality\"\n}"
+            },
+            {
+              "content": "={{ $json.text }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2016,
+        64
+      ],
+      "id": "22520534-7c84-4111-9195-277b32abb1ef",
+      "name": "Analyze Sentiment and Category",
+      "credentials": {
+        "openAiApi": {
+          "id": "yInBnua22GmxIFkM",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "queue",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Unprocessed Calls').item.json.row_number }}",
+            "сall_duration": "={{ $json[\"сall_duration\"] }}",
+            "сall_word_count": "={{ $json[\"сall_word_count\"] }}",
+            "tone ": "={{ $json.tone }}",
+            "Category": "={{ $json.category }}",
+            "total_price_usd": "={{ $json.total_price_usd }}",
+            "status": "Done",
+            "processed-at": "={{ $json.processed_at }}",
+            "price_assembly ai,USD": "={{ $json.assemblyai_price_usd }}",
+            "price_open ai,USD": "={{ $json.openai_price_usd }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processed-at",
+              "displayName": "processed-at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "price_assembly ai,USD",
+              "displayName": "price_assembly ai,USD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "price_open ai,USD",
+              "displayName": "price_open ai,USD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_price_usd",
+              "displayName": "total_price_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "сall_duration",
+              "displayName": "сall_duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "сall_word_count",
+              "displayName": "сall_word_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tone ",
+              "displayName": "tone ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2896,
+        176
+      ],
+      "id": "c7861114-6494-47e7-a2a9-8b47b9929ec6",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6FZpRuYVNO7DjS6x",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "apxwnXXBbbdjQfG4",
+          "mode": "list",
+          "cachedResultName": "processed_calls",
+          "cachedResultUrl": "/projects/aiyc7UsVCrD8Q2xy/datatables/apxwnXXBbbdjQfG4"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "recording_url": "={{ $('Get Unprocessed Calls').item.json.url }}",
+            "call_duration": "={{ $json[\"сall_duration\"] }}",
+            "tone": "={{ $json[\"tone\"] }}",
+            "category": "={{ $json.category }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "recording_url",
+              "displayName": "recording_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "call_duration",
+              "displayName": "call_duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "tone",
+              "displayName": "tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2816,
+        -64
+      ],
+      "id": "5a6b7123-fc8c-4038-9b6d-be8f4815970b",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// =======================\n// INPUT DATA\n// =======================\n\nconst durationMinutes =\n  Number($json[\"сall_duration\"]) || 0;\n\nconst inputTokens =\n  Number($json.input_tokens) || 0;\n\nconst outputTokens =\n  Number($json.output_tokens) || 0;\n\nconst totalTokens =\n  inputTokens + outputTokens;\n\n\n// =======================\n// PRICING\n// =======================\n\n// GPT-4o-mini pricing\nconst OPENAI_INPUT_PRICE_PER_1K = 0.00015;\nconst OPENAI_OUTPUT_PRICE_PER_1K = 0.0006;\n\n// AssemblyAI pricing\nconst ASSEMBLYAI_PRICE_PER_MINUTE = 0.006;\n\n\n// =======================\n// CALCULATIONS\n// =======================\n\n// OpenAI price\nconst openaiPriceUsd =\n  (inputTokens / 1000) * OPENAI_INPUT_PRICE_PER_1K +\n  (outputTokens / 1000) * OPENAI_OUTPUT_PRICE_PER_1K;\n\n\n// AssemblyAI price\nconst assemblyaiPriceUsd =\n  durationMinutes * ASSEMBLYAI_PRICE_PER_MINUTE;\n\n\n// total price\nconst totalPriceUsd =\n  openaiPriceUsd + assemblyaiPriceUsd;\n\n\n// =======================\n// RETURN\n// =======================\n\nreturn {\n  json: {\n\n    // original fields\n    ...$json,\n\n    processed_at:\n      new Date().toISOString(),\n\n    openai_total_tokens:\n      totalTokens,\n\n    openai_price_usd:\n      Number(openaiPriceUsd.toFixed(6)),\n\n    assemblyai_duration_minutes:\n      durationMinutes,\n\n    assemblyai_price_usd:\n      Number(assemblyaiPriceUsd.toFixed(6)),\n\n    total_price_usd:\n      Number(totalPriceUsd.toFixed(6))\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2608,
+        144
+      ],
+      "id": "0ffdf6b9-f995-4436-aea3-8da1a82ded87",
+      "name": "Calculate Costs"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "342dc1c2-9fc3-4286-9753-fb02181a392d",
+              "name": "tone",
+              "value": "={{\nJSON.parse(\n  $json.output[0].content[0].text\n    .replace(/```json/g, \"\")\n    .replace(/```/g, \"\")\n    .trim()\n).sentiment\n}}",
+              "type": "string"
+            },
+            {
+              "id": "1fe44d11-9a26-481e-a538-1d012cd71403",
+              "name": "category",
+              "value": "={{\nJSON.parse(\n  $json.output[0].content[0].text\n    .replace(/```json/g, \"\")\n    .replace(/```/g, \"\")\n    .trim()\n).category\n}}",
+              "type": "string"
+            },
+            {
+              "id": "0d2f87e4-1dd6-472a-9ff8-c33e271a8b62",
+              "name": "сall_duration",
+              "value": "={{ ($('Error Check').item.json.audio_duration  /60 ).toFixed(2)}} ",
+              "type": "number"
+            },
+            {
+              "id": "2a581e26-f47a-4ae4-bba2-2c39772981fa",
+              "name": "сall_word_count",
+              "value": "={{ $('Error Check').item.json.words.length }}",
+              "type": "number"
+            },
+            {
+              "id": "8573ef3a-dad8-4ac7-a929-3e13e736a27d",
+              "name": "input_tokens",
+              "value": "={{ $json.usage.input_tokens }}",
+              "type": "number"
+            },
+            {
+              "id": "77ef443e-4b07-44ff-a4bc-b692825feae5",
+              "name": "output_tokens",
+              "value": "={{ $json.usage.output_tokens }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2368,
+        64
+      ],
+      "id": "a742d565-fa29-4350-b45d-59586f41b3c1",
+      "name": "Parse Analysis Result"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Check for New Calls": {
+      "main": [
+        [
+          {
+            "node": "Get Unprocessed Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Unprocessed Calls": {
+      "main": [
+        [
+          {
+            "node": "Mark as In Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as In Progress": {
+      "main": [
+        [
+          {
+            "node": "Extact ID & ganerate downloadable URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ID": {
+      "main": [
+        [
+          {
+            "node": "GET Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extact ID & ganerate downloadable URL": {
+      "main": [
+        [
+          {
+            "node": "AssemblyAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Transcript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Wait for Transcript Processing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Transcript Processing": {
+      "main": [
+        [
+          {
+            "node": "GET Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AssemblyAI": {
+      "main": [
+        [
+          {
+            "node": "ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Check": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze Sentiment and Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Sentiment and Category": {
+      "main": [
+        [
+          {
+            "node": "Parse Analysis Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        []
+      ]
+    },
+    "Calculate Costs": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Analysis Result": {
+      "main": [
+        [
+          {
+            "node": "Calculate Costs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Kt64CKhSmSoS9K0h",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1
+  },
+  "versionId": "4015093f-dba1-43ab-9aee-2bccab34a4a3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e56563062a1493aa697c9863d2ba9013f1097196e02accbf8191982bf48157fd"
+  },
+  "id": "yWO729u9GUvEhjFj",
+  "tags": []
+}
