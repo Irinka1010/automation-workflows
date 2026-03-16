@@ -1,0 +1,206 @@
+{
+  "name": "Call Analytics Error Handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "39c36751-e02a-4ae8-8c98-4dad9f9272b9",
+      "name": "Catch Error"
+    },
+    {
+      "parameters": {
+        "jsCode": "const execution = $json.execution || {};\n\nconst errorObj = execution.error || {};\n\nconst executionId = execution.id || \"\";\n\nconst baseUrl = \"https://iryna12456.app.n8n.cloud\";\n\nreturn [\n  {\n    json: {\n\n      userMessage:\n        \"Сталася помилка при отриманні статистики дзвінків. Спробуйте пізніше.\",\n\n      errorMessage:\n        errorObj.message || \"Unknown error\",\n\n      stack:\n        errorObj.stack || \"\",\n\n      workflow:\n        $json.workflow?.name || \"\",\n\n      node:\n        execution.lastNodeExecuted || \"\",\n\n      executionId,\n\n      executionUrl:\n        executionId\n          ? `${baseUrl}/execution/${executionId}`\n          : \"\",\n\n      timestamp:\n        new Date().toISOString()\n\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "89311943-48e0-4afe-9f95-3b7b1448c695",
+      "name": "Format Error Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit?gid=614135771#gid=614135771",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 614135771,
+          "mode": "list",
+          "cachedResultName": "error",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tYJ9PJW4otUzAfjtLD9j-sHoNVHkF4k3cJ1gaUQdA7A/edit#gid=614135771"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "errorMessage": "={{ $json.errorMessage }}",
+            "workflow": "={{ $json.workflow }}",
+            "node": "={{ $json.node }}",
+            "executionId": "={{ $json.executionId }}",
+            "stack": "={{ $json.stack }}",
+            "executionUrl": "={{ $json.executionUrl }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "errorMessage",
+              "displayName": "errorMessage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow",
+              "displayName": "workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "node",
+              "displayName": "node",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "executionId",
+              "displayName": "executionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stack",
+              "displayName": "stack",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "executionUrl",
+              "displayName": "executionUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -16
+      ],
+      "id": "9e5522bd-c8c0-4092-a356-90736359e36b",
+      "name": "Save Error Log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6FZpRuYVNO7DjS6x",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Catch Error": {
+      "main": [
+        [
+          {
+            "node": "Format Error Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error Data": {
+      "main": [
+        [
+          {
+            "node": "Save Error Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6e6339e9-e1e5-4b18-bc11-5820ef6c56b8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e56563062a1493aa697c9863d2ba9013f1097196e02accbf8191982bf48157fd"
+  },
+  "id": "Kt64CKhSmSoS9K0h",
+  "tags": []
+}
