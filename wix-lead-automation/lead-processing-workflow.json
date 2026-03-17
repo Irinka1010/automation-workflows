@@ -1,0 +1,424 @@
+{
+  "name": "Lead Form Handle",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8f32a4e6-e947-4201-a5f2-de417ae26e01",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        64
+      ],
+      "id": "a8db9423-d668-4099-be81-d4721635a471",
+      "name": "Receive Form",
+      "webhookId": "8f32a4e6-e947-4201-a5f2-de417ae26e01"
+    },
+    {
+      "parameters": {
+        "jsCode": "const submissions = $json.body.data.submissions;\n\nlet result = {};\n\nfor (const field of submissions) {\n  result[field.label] = field.value;\n}\n\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        64
+      ],
+      "id": "c859a47f-3951-4478-8684-c34e4bd65786",
+      "name": "Parse Form Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "04324282-7f8d-4628-a620-293eed274812",
+              "name": "name",
+              "value": "={{ $json['Ім’я'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e7d07d2d-3c48-4356-b224-b6c7931036a7",
+              "name": "email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "b3b46c4b-7de6-494b-8233-b758dfb13446",
+              "name": "phone",
+              "value": "={{ $json['Телефон'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c6813ecb-4e06-4ace-adf4-a66e708477d4",
+              "name": "note",
+              "value": "={{ $json['Ваше повідомлення'] }}",
+              "type": "string"
+            },
+            {
+              "id": "77e5be8b-dbec-4581-8ab4-eaa8eb58aaa3",
+              "name": "created at",
+              "value": "={{ DateTime.now().toFormat('dd.MM.yyyy HH:mm:ss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        64
+      ],
+      "id": "66aeab69-4690-45f1-8a8a-656a7cdf2898",
+      "name": "Format Lead"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1PBBkMdWVK49DWJvPm_oIzJP1I6pA6hsvrD3YKNRB4uo/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PBBkMdWVK49DWJvPm_oIzJP1I6pA6hsvrD3YKNRB4uo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created at": "={{ $json[\"created at\"] }}",
+            "nema": "={{ $json.name }}",
+            "email": "={{ $json.email }}",
+            "phone": "={{ \"'\" + $json.phone}}",
+            "note": "={{ $json.note }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "created at",
+              "displayName": "created at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nema",
+              "displayName": "nema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "note",
+              "displayName": "note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        -128
+      ],
+      "id": "7ba105dd-56f6-49e9-ad8e-3f0271510e1f",
+      "name": "Save Lead to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "iZS72Rve65vUme7x",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1014435051",
+        "text": "=🔔 Нова заявка з сайту Wood Metal Loft\n\n👤 Ім’я: {{ $json.name }}\n📧 Email: {{ $json.email }} \n📞 Телефон: {{ $json.phone }} \n💬 Повідомлення: {{ $json.note }}\n🕒 Дата заявки: {{ $json[\"created at\"] }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        256
+      ],
+      "id": "da174656-3b32-4276-911f-75a822bc3176",
+      "name": "Send Lead to Telegram",
+      "webhookId": "f6960c57-b7ea-4162-ab4d-50a18512ba98",
+      "credentials": {
+        "telegramApi": {
+          "id": "LrIWChkoKxub1IVv",
+          "name": "WoodMetalLoft"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "lead",
+        "Company": "-",
+        "lastName": "={{ $json.name }}",
+        "additionalFields": {
+          "Description": "={{ $json.note }}",
+          "Email": "={{ $json.email }}",
+          "First_Name": "={{ $json.name }}",
+          "Phone": "={{ $json.phone }}"
+        }
+      },
+      "type": "n8n-nodes-base.zohoCrm",
+      "typeVersion": 1,
+      "position": [
+        672,
+        64
+      ],
+      "id": "5f8d7558-f662-4c2c-8ac1-aba2e9d9f3fc",
+      "name": "Send Lead to CRM",
+      "credentials": {
+        "zohoOAuth2Api": {
+          "id": "GdpyyTLxSLIsaAE3",
+          "name": "Zoho account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Receive Form": [
+      {
+        "json": {
+          "headers": {
+            "host": "iryna1010.app.n8n.cloud",
+            "user-agent": "axios/0.21.4",
+            "content-length": "2452",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "64.7.220.71",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9ddc9049c8de4379-EWR",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "64.7.220.71, 162.158.154.72",
+            "x-forwarded-host": "iryna1010.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-73-5545cf6dbc-j7c6s",
+            "x-is-trusted": "yes",
+            "x-real-ip": "64.7.220.71"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "data": {
+              "formName": "Order_form",
+              "submissions": [
+                {
+                  "label": "Ім’я",
+                  "value": "раоп"
+                },
+                {
+                  "label": "Email",
+                  "value": "Mexal07@ukr.net"
+                },
+                {
+                  "label": "Телефон",
+                  "value": "+380 67 564 2333"
+                },
+                {
+                  "label": "Ваше повідомлення",
+                  "value": "ормоаршгкне"
+                }
+              ],
+              "submissionTime": "2026-03-17T14:06:56.788Z",
+              "field:vashe_povidomlennya": "ормоаршгкне",
+              "context": {
+                "metaSiteId": "73cdab87-dceb-46a5-a8e6-b84aed417848",
+                "activationId": "433641c4-f27a-4270-8302-c05f45d69c40"
+              },
+              "_context": {
+                "activation": {
+                  "id": "433641c4-f27a-4270-8302-c05f45d69c40"
+                },
+                "configuration": {
+                  "id": "e337fcce-9b13-4aef-be2f-1c04d4e0606d"
+                },
+                "app": {
+                  "id": "225dd912-7dea-4738-8688-4b8c6955ffc2"
+                },
+                "action": {
+                  "id": "19f53107-9387-4638-8096-f4e3566e9320"
+                },
+                "trigger": {
+                  "key": "wix_form_app-form_submitted"
+                }
+              },
+              "_identityContext": {
+                "visitorId": "60b010cb-b777-4826-be43-3d3763f680b8",
+                "userId": "60b010cb-b777-4826-be43-3d3763f680b8"
+              },
+              "formFieldMask": [
+                "field:im_ya",
+                "field:email_2206",
+                "field:telefon",
+                "field:vashe_povidomlennya",
+                "field:",
+                "metaSiteId"
+              ],
+              "contact": {
+                "name": {
+                  "first": "раоп"
+                },
+                "email": "mexal07@ukr.net",
+                "locale": "ru",
+                "phones": [
+                  {
+                    "tag": "UNTAGGED",
+                    "formattedPhone": "+380 67 564 2333",
+                    "countryCode": "UA",
+                    "e164Phone": "+380675642333",
+                    "primary": true,
+                    "phone": "67 564 2333"
+                  }
+                ],
+                "contactId": "6f240c34-0463-4194-a14e-2e00fd28a8a4",
+                "emails": [
+                  {
+                    "tag": "UNTAGGED",
+                    "email": "mexal07@ukr.net",
+                    "primary": true
+                  }
+                ],
+                "updatedDate": "2026-03-17T14:06:59.480Z",
+                "phone": "+380675642333",
+                "createdDate": "2026-03-17T14:06:58.763Z"
+              },
+              "submissionId": "8231474a-5c15-42b5-8ee2-4906b059b331",
+              "field:im_ya": "раоп",
+              "field:telefon": "+380675642333",
+              "field:email_2206": "Mexal07@ukr.net",
+              "contactId": "6f240c34-0463-4194-a14e-2e00fd28a8a4",
+              "submissionsLink": "https://manage.wix.app/forms/submissions/73cdab87-dceb-46a5-a8e6-b84aed417848/e3d731a4-32af-4eea-b374-d4e97992c498?d=https%3A%2F%2Fmanage.wix.com%2Fdashboard%2F73cdab87-dceb-46a5-a8e6-b84aed417848%2Fwix-forms%2Fform%2Fe3d731a4-32af-4eea-b374-d4e97992c498%2Fsubmissions&s=true",
+              "submissionPdf": {
+                "fileName": "8231474a-5c15-42b5-8ee2-4906b059b331.pdf",
+                "downloadUrl": "https://manage.wix.com/_api/form-submission-service/v4/submissions/8231474a-5c15-42b5-8ee2-4906b059b331/download?accessToken=JWS.eyJraWQiOiJWLVNuLWhwZSIsImFsZyI6IkhTMjU2In0.eyJkYXRhIjoie1wibWV0YVNpdGVJZFwiOlwiNzNjZGFiODctZGNlYi00NmE1LWE4ZTYtYjg0YWVkNDE3ODQ4XCJ9IiwiaWF0IjoxNzczNzU2NDE5LCJleHAiOjE3NzM3NjAwMTl9.CZpJVU64I9NpXpBUOmIkZ6GqvuILY6XXWhr8vHHoUKk"
+              },
+              "formId": "e3d731a4-32af-4eea-b374-d4e97992c498"
+            }
+          },
+          "webhookUrl": "https://iryna1010.app.n8n.cloud/webhook-test/8f32a4e6-e947-4201-a5f2-de417ae26e01",
+          "executionMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Receive Form": {
+      "main": [
+        [
+          {
+            "node": "Parse Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Form Data": {
+      "main": [
+        [
+          {
+            "node": "Format Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Lead": {
+      "main": [
+        [
+          {
+            "node": "Send Lead to CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save Lead to Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Lead to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Lead to Telegram": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "PvSEDlYnzyAKjOmb",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "7e5295ba-3e05-4cca-9985-72618caac626",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c7a48120d3bb0f667fd02a8cee71c0dc5e25d8c8a43ccfa8177454ee4d928537"
+  },
+  "id": "O3xIr0tqWuneK4ea",
+  "tags": []
+}
