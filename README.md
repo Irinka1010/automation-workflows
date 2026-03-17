@@ -2,7 +2,7 @@
 
 Collection of automation systems built with **n8n**, **AI agents**, and external APIs.
 
-These projects demonstrate automation of business processes including AI content generation, call analytics, and workflow orchestration.
+These projects demonstrate automation of business processes including AI content generation, call analytics, lead processing, and workflow orchestration.
 
 ---
 
@@ -44,6 +44,27 @@ ai-call-analysis
 
 ---
 
+## Wix Lead Automation
+
+Automation system that captures leads from a website and distributes them across multiple systems in real time.
+
+The workflow receives form submissions from a Wix website, processes the data, and sends it to Google Sheets, Telegram, and Zoho CRM.
+
+Features:
+
+- webhook-based form processing
+- real-time lead capture
+- Google Sheets integration (lead storage)
+- Telegram notifications
+- Zoho CRM integration
+- multi-system data distribution
+
+Folder:
+
+wix-lead-automation
+
+---
+
 # Technologies
 
 - n8n
@@ -51,4 +72,7 @@ ai-call-analysis
 - AssemblyAI
 - AI Agents
 - Google Sheets
+- Telegram API
+- Zoho CRM API
+- Webhooks
 - Workflow Automation
